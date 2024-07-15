@@ -12,7 +12,7 @@ name = "pyjq"
 version = "2.6.0"
 description = "Binding for jq JSON processor."
 readme = "README.md"
-keyword = ["jq"]
+keywords = ["jq"]
 license = {text = "MIT License"}
 authors = [{ name = "Omoto Kenji" } ]
 classifiers = [
