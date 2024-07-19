@@ -2,11 +2,11 @@
 pyjq = {editable = true, path = "."}
 
 [dev-packages]
-cython = "~=3.0"
-twine = "*"
-pytest = "*"
-mypy = "*"
 black = "*"
+cython = "~=3.0"
+mypy = "*"
+pytest = "*"
+twine = "*"
 
 [pipenv]
 allow_prereleases = true
