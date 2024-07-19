@@ -30,6 +30,6 @@ jobs:
         python-version: "${{ matrix.python-version }}"
     - run: sudo apt-get install python3-pip libjq-dev libonig-dev automake autoconf libtool git python3 cython3 python3-setuptools
     - run: pip3 install pipenv
-    - run: pipenv install
+    - run: pipenv install --dev
     - run: pipenv run python3 setup.py build
     - run: ls build/
