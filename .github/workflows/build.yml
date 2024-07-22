@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-chronoforge:
+  build-pyjq:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -34,7 +34,7 @@ jobs:
     - run: pipenv run python3 setup.py build
     - run: ls build/
   build-arm:
-    runs-on: arm64-beta
+    runs-on: arm64-beta-public
     strategy:
       matrix:
         python-version: [3.11, 3.12]
