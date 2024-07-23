@@ -5,16 +5,16 @@ name: chronoforge tool
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-chronoforge:
+  build-pyjq:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -28,3 +28,27 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: "${{ matrix.python-version }}"
+    - run: sudo apt-get install python3-pip libjq-dev libonig-dev automake autoconf libtool
+    - run: pip3 install pipenv
+    - run: pipenv install --dev
+    - run: pipenv run python3 setup.py build
+    - run: ls build/
+  build-arm:
+    runs-on: arm64-beta-public
+    strategy:
+      matrix:
+        python-version: [3.11, 3.12]
+    steps:
+    # Checkout repo and setup python
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      id: setup-python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "${{ matrix.python-version }}"
+    - run: sudo apt-get install python3-pip libjq-dev libonig-dev automake autoconf libtool
+    - run: pip3 install pipenv
+    - run: pipenv install --dev
+    - run: pipenv run python3 setup.py build
+    - run: ls build/
