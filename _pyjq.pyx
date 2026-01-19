@@ -137,7 +137,7 @@ cdef jv pyobj_to_jv(object pyobj) except *:
         return jv_string_sized(pyobj, len(pyobj))
     elif isinstance(pyobj, bool):
         return jv_bool(pyobj)
-    elif isinstance(pyobj, (int, long, float)):
+    elif isinstance(pyobj, (int, float)):
         return jv_number(pyobj)
     elif isinstance(pyobj, (list, tuple)):
         jval = jv_array()
