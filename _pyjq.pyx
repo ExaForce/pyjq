@@ -75,6 +75,8 @@ cdef extern from "jv.h":
     void jv_parser_set_buf(jv_parser*, const char*, int, int)
     jv jv_parser_next(jv_parser*)
 
+    jv jv_parse(const char*)
+
 
 cdef extern from "jq.h":
     ctypedef struct jq_state:
@@ -85,6 +87,7 @@ cdef extern from "jq.h":
     jq_state *jq_init()
     void jq_set_attr(jq_state *, jv, jv)
     void jq_teardown(jq_state **)
+    bint jq_compile(jq_state *, const char* str)
     bint jq_compile_args(jq_state *, const char* str, jv args)
     void jq_start(jq_state *, jv value, int flags)
     jv jq_next(jq_state *)
@@ -167,16 +170,13 @@ cdef class Script:
     cdef jq_state* _jq
 
     def __init__(self, const char* script, vars={}, library_paths=[]):
+        import json
+
         self._errors = []
         self._jq = jq_init()
         if not self._jq:
             raise RuntimeError('Failed to initialize jq')
         jq_set_error_cb(self._jq, Script_error_cb, <void*>self)
-
-        args = pyobj_to_jv([
-            dict(name=k, value=v)
-            for k, v in vars.items()
-        ])
 
         jq_set_attr(
             self._jq,
@@ -184,7 +184,19 @@ cdef class Script:
             pyobj_to_jv([str(path) for path in library_paths])
         )
 
-        if not jq_compile_args(self._jq, script, args):
+        cdef jv jv_args
+        cdef int compiled
+
+        if vars:
+            # Use jv_parse with JSON string format (compatible with jq >= 1.6)
+            args_bytes = json.dumps(vars).encode("utf-8")
+            jv_args = jv_parse(args_bytes)
+            compiled = jq_compile_args(self._jq, script, jv_args)
+        else:
+            # No vars, use simple jq_compile
+            compiled = jq_compile(self._jq, script)
+
+        if not compiled:
             raise ValueError("\n".join(self._errors))
 
     cdef _error_cb(self, jv err):
