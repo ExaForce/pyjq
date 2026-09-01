@@ -1,6 +1,10 @@
 Changelog
 ---------
 
+### Unreleased
+
+- Supports 3.11, 3.12, 3.13.
+
 ### 2.6.0
 
 - Supports 3.10

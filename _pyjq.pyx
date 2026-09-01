@@ -3,6 +3,7 @@
 Python binding for jq
 """
 
+import json
 import os
 
 
@@ -74,6 +75,8 @@ cdef extern from "jv.h":
     void jv_parser_free(jv_parser*)
     void jv_parser_set_buf(jv_parser*, const char*, int, int)
     jv jv_parser_next(jv_parser*)
+
+    jv jv_parse(const char*)
 
 
 cdef extern from "jq.h":
@@ -173,10 +176,16 @@ cdef class Script:
             raise RuntimeError('Failed to initialize jq')
         jq_set_error_cb(self._jq, Script_error_cb, <void*>self)
 
-        args = pyobj_to_jv([
-            dict(name=k, value=v)
-            for k, v in vars.items()
-        ])
+        # Bind named variables by handing jq_compile_args a JSON OBJECT
+        # ({name: value, ...}), parsed by jq itself via jv_parse. The original
+        # code built a [{name, value}] ARRAY (via pyobj_to_jv); jq's internal
+        # args2obj() then runs that array through a jv_array_foreach conversion
+        # loop that corrupts the heap with system libjq ("malloc(): unaligned
+        # tcache chunk detected", reproduced on jq 1.6 and 1.7.1). An empty
+        # array skips the loop (hence vars={} never crashed); any real var hit
+        # it. The object form is returned by args2obj() unchanged, avoiding the
+        # broken path entirely.
+        args = jv_parse(json.dumps(dict(vars)).encode("utf-8"))
 
         jq_set_attr(
             self._jq,
