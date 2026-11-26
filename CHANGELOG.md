@@ -3,7 +3,9 @@ Changelog
 
 ### Unreleased
 
-- Supports 3.11, 3.12, 3.13.
+- Supports 3.11, 3.12, 3.13, 3.14, 3.15.
+- Building now requires Cython >= 3.1 (dropped the Python 2 `long` reference
+  that Cython 3.1 rejects).
 
 ### 2.6.0
 
