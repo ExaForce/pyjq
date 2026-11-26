@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
     steps:
     # Checkout repo and setup python
     - name: Checkout repository
@@ -33,11 +33,12 @@ jobs:
     - run: pipenv install --dev
     - run: pipenv run python3 setup.py build
     - run: ls build/
+    - run: pipenv run pytest -v test_pyjq.py
   build-arm:
     runs-on: arm64-beta-public
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
     steps:
     # Checkout repo and setup python
     - name: Checkout repository
@@ -52,3 +53,4 @@ jobs:
     - run: pipenv install --dev
     - run: pipenv run python3 setup.py build
     - run: ls build/
+    - run: pipenv run pytest -v test_pyjq.py
