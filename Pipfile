@@ -3,11 +3,8 @@ pyjq = {editable = true, path = "."}
 
 [dev-packages]
 black = "*"
-cython = "~=3.0"
+cython = "<=3.0.12"
 mypy = "*"
 pytest = "*"
 setuptools = "*"
 twine = "*"
-
-[pipenv]
-allow_prereleases = true
